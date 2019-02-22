@@ -1,6 +1,6 @@
 """Module contains functions for validating user inputs as provided"""
 import re
-from flask import jsonify, request, abort
+from flask import jsonify, request
 from functools import wraps
 from api.utilitiez.responses import (
     wrong_password,
@@ -8,8 +8,6 @@ from api.utilitiez.responses import (
     wrong_email,
     wrong_phone_number,
     wrong_name,
-    wrong_location,
-    length_of_location,
 )
 
 
@@ -130,6 +128,18 @@ def validate_phone_number(phone_number):
     return error
 
 
+def validate_sentence(sentence, min_len=0, max_len=0):
+    error = None
+    sentence = str(sentence).strip()
+    if sentence.isdigit():
+        error = "Field cannot be a number"
+    elif len(sentence) < min_len:
+        error = f"Field must contain a minimum of {str(min_len)} characters"
+    elif max_len and len(sentence) > max_len:
+        error = f"Field must contain a maximum of {str(max_len)} characters"
+    return error
+
+
 def validate_new_user(**kwargs):
     errors = dict()
     errors["firstname"] = validate_name(kwargs["first_name"])
@@ -145,92 +155,31 @@ def validate_new_user(**kwargs):
     return None
 
 
-def validate_sentence(sentence, min_len=0, max_len=0):
-    error = None
-    sentence = str(sentence).strip()
-    if sentence.isdigit():
-        error = "Field cannot be a number"
-    elif len(sentence) < min_len:
-        error = f"Field must contain a minimum of {str(min_len)} characters"
-    elif max_len and len(sentence) > max_len:
-        error = f"Field must contain a maximum of {str(max_len)} characters"
-
-    return error
-
-
-media_format = {"Videos": [".mp4", "MP4"], "Images": ["jpg", "JPEG"]}
-
-
-def is_validate_media_type(collection, media_type):
-    for media in collection:
-        if not media.endswith(media_format.get(media_type)[0]):
-            return False
-    return True
-
-
-def validate_media(media_collection, media_type):
-    media_format = {"Videos": [".mp4", ".mp4"], "Images": ["jpg", ".Jpg"]}
-    error = None
-    if not isinstance(media_collection, list):
-        error = f"Please provide an empty list of {media_type} if none"
-    elif not is_validate_media_type(media_collection, media_type):
-        error = (
-            f"Only {media_format.get(media_type)[1]} {media_type} are "
-            "supported"
-        )
-
-    return error
-
-
-def validate_location(location):
-    error = None
-    if not isinstance(location, list) or not len(location) == 2:
-        error = wrong_location
-    elif not is_number(location[0]) or not is_number(location[1]):
-        error = "location coordinates must be a number"
-    elif not -90 < location[0] < 90 or not -180 < location[1] < 180:
-        error = length_of_location
-
-    return error
-
-
-def validate_new_incident(**kwargs):
+def validate_new_office(**kwargs):
     errors = dict()
-    errors["title"] = validate_sentence(kwargs.get("title"), 4, 100)
-    errors["comment"] = validate_sentence(kwargs.get("comment"), 10)
-    errors["location"] = validate_location(kwargs.get("location"))
-    errors["type"] = validate_type(kwargs.get("inc_type"))
-    not_valid = {key: value for key, value in errors.items() if value}
-
-    if not_valid:
-        return (jsonify({"status": 400, "error": not_valid}), 400)
+    errors["office_name"] = validate_name(kwargs["office_name"])
+    errors["office_type"] = validate_name(kwargs["office_type"])
+    not_valid_office = {key: value for key, value in errors.items() if value}
+    if not_valid_office:
+        return (jsonify({"status": 400, "error": not_valid_office}), 400)
     return None
 
-def validate_edit_location(location):
-    error = validate_location(location)
-    if error:
-        return error
-    else:
-        return None
 
+def validate_parties(**kwargs):
+    errors = dict()
+    errors["party_name"] = validate_name(kwargs["party_name"])
+    errors["hq_address"] = validate_sentence(kwargs.get("HqAddress"), 10)
+    errors["logo_url"] = validate_sentence(kwargs.get("logourl"), 12)
+    not_valid_party = {key: value for key, value in errors.items() if value}
+    if not_valid_party:
+        return (jsonify({"status": 400, "error": not_valid_party}), 400)
+    return None
+ 
 
-def is_valid_status(status):
-    is_valid = True
-    if not status or not isinstance(status, str):
-        is_valid = False
-    elif str(status).lower() not in (
-            "draft",
-            "resolved",
-            "under investigation",
-            "rejected",
-    ):
-        is_valid = False
-    return is_valid
-
-
-def validate_type(inc_type):
-    if inc_type == "redflag" or inc_type == "intervention":
-        return None
-    else:
-        return "type must either be redflag or intervention"
-
+def validate_a_candidate(**kwargs):
+    errors = dict()
+    errors["candidate_name"] = validate_name(kwargs["candidate_name"])
+    not_valid_candidate = {key: value for key, value in errors.items() if value}
+    if not_valid_candidate:
+        return (jsonify({"status": 400, "error": not_valid_c}), 400)
+    return None

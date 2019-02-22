@@ -1,12 +1,6 @@
 from flask import Flask, jsonify
 from api.views.user_view import users_bp
-# from api.views.incident import (
-#     create_incident_bp,
-#     del_inc_bp,
-#     edit_bp, 
-#     admin_bp,
-#     get_inc_bp
-#     )
+from api.views.office_view import office_bp
 from instance.config import app_config
 
 
@@ -51,10 +45,5 @@ def create_app(config_name):
         return (jsonify({"error": "Method not allowed"}), 405)
 
     app.register_blueprint(users_bp)
-    # app.register_blueprint(create_incident_bp)
-    # app.register_blueprint(get_inc_bp)
-    # app.register_blueprint(edit_bp)
-    # app.register_blueprint(admin_bp)
-    # app.register_blueprint(del_inc_bp)
-   
+    app.register_blueprint(office_bp)
     return app
