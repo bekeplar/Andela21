@@ -24,8 +24,8 @@ class User:
         other_names = kwargs["other_names"]
         email = kwargs["email"]
         phone_number = kwargs["phone_number"]
-        user_name = kwargs.get("user_name")
         passport_url = kwargs["passport_url"]
+        user_name = kwargs.get("user_name")
         user_password = generate_password_hash(kwargs["password"])
 
         # Querry for adding a new user into users_db
@@ -34,17 +34,17 @@ class User:
             "first_name,"
             "last_name, "
             "other_names,"
-            "email, phone_number, user_name,"
-            "passport_url", "user_password )VALUES ("
+            "email, phone_number, user_name, passport_url,"
+            "user_password )VALUES ("
             f"'{first_name}', '{last_name}','{other_names}',"
             f"'{email}', '{phone_number}','{user_name}',"
             f"'{passport_url}','{user_password}') returning "
             "user_id,first_name as firstname,"
             "last_name as lastname, "
             "other_names as othernames,"
-            "passport_url as passporturl,"
             "email, phone_number as phoneNumber, "
             "user_name as userName, "
+            "passport_url as passporturl, "
             "registered_on as registered"
         )
         self.db.cursor_database.execute(sql)
@@ -86,8 +86,8 @@ class User:
     def is_valid_credentials(self, user_name, user_password):
         """Function for verrifying user credentials before login"""
         sql = (
-            "SELECT user_id,user_name ,user_password FROM users "
-            f"where user_name='{user_name}';"
+            "SELECT user_id,user_name ,user_password FROM users where user_name="
+            f"'{user_name}';"
         )
         self.db.cursor_database.execute(sql)
 
