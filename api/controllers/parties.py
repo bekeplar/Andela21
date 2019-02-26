@@ -81,9 +81,9 @@ class PartiesController:
     def delete_party(self, party_id):
         response = None
 
-        results = party_obj.delete_record(party_id)
-        details = party_obj.get_party_by_id(party_id)
-        if not results:
+        outcome = party_obj.delete_record(party_id)
+        party_details = party_obj.get_party_by_id(party_id)
+        if not outcome:
             response = (
                 jsonify(
                     {
@@ -93,7 +93,7 @@ class PartiesController:
                 ),
                 404,
             )
-        elif results:
+        elif outcome:
 
             response = (
                 jsonify(
@@ -101,7 +101,7 @@ class PartiesController:
                         "status": 200,
                         "data": [
                             {
-                                "office": details,
+                                "office": party_details,
                                 "success": "Party record has been deleted"
                             }
                         ],
@@ -124,10 +124,10 @@ class PartiesController:
         return response
 
     def change_details(self, party_id, data):
-        party_name = request.get_json(force=True).get("party_name")
-        results = party_obj.get_party_by_id(party_id)
+        new_name = request.get_json(force=True).get("party_name")
+        outcome = party_obj.get_party_by_id(party_id)
         response = None
-        if not results:
+        if not outcome:
             response = (
                 jsonify(
                     {
@@ -137,11 +137,11 @@ class PartiesController:
                 ),
                 404,
             )
-        elif not validate_name(party_name):
+        elif not validate_name(new_name):
             response = jsonify({"status": 400, "error": wrong_name}), 400
 
         else:
-            update = party_obj.update_party_name(party_id, party_name)
+            update = party_obj.update_party_name(party_id, new_name)
             response = (
                 jsonify(
                     {

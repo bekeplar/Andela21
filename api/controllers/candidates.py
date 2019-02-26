@@ -79,9 +79,8 @@ class CandidateController:
             )
         return response
 
-    def delete(self, candidate_id):
+    def Remove_candidate(self, candidate_id):
         response = None
-
         results = candid_obj.delete_candidate(candidate_id)
         details = candid_obj.get_one(candidate_id)
         if not results:

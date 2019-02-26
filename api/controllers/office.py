@@ -127,7 +127,7 @@ class OfficeController:
         return response
 
     def edit_office(self, office_id, data):
-        office_name = request.get_json(force=True).get("office_name")
+        update_name = request.get_json(force=True).get("office_name")
         results = office_obj.get_an_office_by_id(office_id)
         response = None
         if not results:
@@ -145,7 +145,7 @@ class OfficeController:
 
         else:
 
-            update = office_obj.update_office(office_id, office_name)
+            update = office_obj.update_office(office_id, update_name)
             response = (
                 jsonify(
                     {
