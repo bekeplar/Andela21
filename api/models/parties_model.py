@@ -22,8 +22,8 @@ class Party:
             "logo_url as logourl ;"
         )
         self.db.cursor_database.execute(sql)
-        new_office = self.db.cursor_database.fetchone()
-        return new_office
+        party = self.db.cursor_database.fetchone()
+        return party
 
     def get_parties(self):
         sql = f"SELECT * FROM parties;"

@@ -1,6 +1,6 @@
 from flask import jsonify, request, json
 
-from api.utilitiez.auth_token import encode_token
+from api.utilitiez.user_auth import encode_token
 from api.utilitiez.validation import validate_new_user
 
 from api.models.user_model import User

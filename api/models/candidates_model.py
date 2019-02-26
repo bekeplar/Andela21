@@ -21,10 +21,10 @@ class Candidate:
             "office_id as OfficeId ;"
         )
         self.db.cursor_database.execute(sql)
-        new_office = self.db.cursor_database.fetchone()
-        return new_office
+        new_candidate = self.db.cursor_database.fetchone()
+        return new_candidate
 
-    def get_candidate(self):
+    def get_candidates(self):
         sql = f"SELECT * FROM candidates;"
         self.db.cursor_database.execute(sql)
         return self.db.cursor_database.fetchall()
@@ -45,7 +45,7 @@ class Candidate:
         return self.db.cursor_database.fetchone()
 
     def delete_candidate(self, cand_id):
-        """Function to delete a record."""
+        """Function to delete a candidate record."""
         sql = (
             f"DELETE FROM candidates "
             f"WHERE _id='{cand_id}' returning *;"
@@ -54,6 +54,7 @@ class Candidate:
         return self.db.cursor_database.fetchone()
 
     def check_candidate_exists(self, cand_name):
+        """Function to check for duplication"""
         exists_sql = (
             "SELECT candidate_name where "
             f"candidate_name ='{cand_name}' ;"

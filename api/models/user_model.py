@@ -61,7 +61,7 @@ class User:
         self.db.cursor_database.execute(user_exists_sql)
         user_exists = self.db.cursor_database.fetchone()
         error = {}
-        # comparing new user details with db users
+        # comparing new user details with users in db
         if user_exists and user_exists.get("user_name") == user_name:
             error["username"] = duplicate_user_name
 

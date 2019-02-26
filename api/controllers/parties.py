@@ -1,18 +1,17 @@
 from flask import jsonify, request
-from api.models.office_model import Office
-from api.utilitiez.validation import validate_new_office, validate_name
+from api.models.parties_model import Party
+from api.utilitiez.validation import validate_parties, validate_name
 from api.utilitiez.responses import wrong_name
 
+party_obj = Party()
 
-office_obj = Office()
 
-
-class OfficeController:
+class PartiesController:
     """
-    Class containing all logic connecting Office views and models.
+    Class containing all logic connecting Parties views and models.
     """
 
-    def new_office(self, data):
+    def create_new_party(self, data):
         if not request.data:
             return (
                 jsonify({"error": "Please provide some  data", "status": 400}),
@@ -20,32 +19,31 @@ class OfficeController:
             )
         data = request.get_json()
 
-        new_office_inputs = {
-            "office_type": data.get("type"),
-            "office_name": data.get("officeName")
+        new_party_data = {
+            "party_name": data.get("partyName"),
+            "hq_address": data.get("HqAddress"),
+            "logo_url": data.get("logourl"),
         }
 
-        not_valid = validate_new_office(**new_office_inputs)
+        not_valid = validate_parties(**new_party_data)
         response = None
         if not_valid:
             response = not_valid
-        office_exists = office_obj.check_office_exists(
-            new_office_inputs["office_name"])
-            
+        exists = party_obj.check_party_exists(
+            new_party_data["part_name"], new_party_data["logo_url"])
         response = None
-        if office_exists:
-            response = jsonify({"error": office_exists, "status": 409}), 409
-
+        if exists:
+            response = jsonify({"error": exists, "status": 409}), 409
         else:
-            new_office = office_obj.create_office(**new_office_inputs)
+            new_party = party_obj.create_Parties(**new_party_data)
             response = (
                 jsonify(
                     {
                         "status": 201,
                         "data": [
                             {
-                                "Office": new_office,
-                                "success": "Created new office successfully",
+                                "Office": new_party,
+                                "success": "Created new party successfully",
                             }
                         ],
                     }
@@ -54,15 +52,14 @@ class OfficeController:
             )
         return response
 
-    def get_offices(self):
-        results = office_obj.get_all_offices()
-
+    def get_all_parties(self):
+        results = party_obj.get_parties()
         return jsonify({"status": 200,
                         "data": results,
                         "message": "Office records found"}), 200
 
-    def get_an_office(self, office_id):
-            results = office_obj.get_an_office_by_id(office_id)
+    def get_one_party(self, party_id):
+            results = party_obj.get_party_by_id(party_id)
             response = None
             if results and "error" in results:
                 response = (jsonify({"status": 401, "error": results["error"]}), 401)
@@ -74,24 +71,24 @@ class OfficeController:
                     jsonify(
                         {
                             "status": 404,
-                            "error": "Office with such id not found"
+                            "error": "Party with such id not found"
                         }
                     ),
                     404,
                 )
             return response
 
-    def delete_record(self, office_id):
+    def delete_party(self, party_id):
         response = None
 
-        results = office_obj.delete_office_record(office_id)
-        office_details = office_obj.get_an_office_by_id(office_id)
+        results = party_obj.delete_record(party_id)
+        details = party_obj.get_party_by_id(party_id)
         if not results:
             response = (
                 jsonify(
                     {
                         "status": 404,
-                        "error": "Office record does not exist",
+                        "error": "such party does not exist",
                     }
                 ),
                 404,
@@ -104,8 +101,8 @@ class OfficeController:
                         "status": 200,
                         "data": [
                             {
-                                "office": office_details,
-                                "success": "Office has been deleted"
+                                "office": details,
+                                "success": "Party record has been deleted"
                             }
                         ],
                     }
@@ -126,39 +123,37 @@ class OfficeController:
             )
         return response
 
-    def edit_office(self, office_id, data):
-        office_name = request.get_json(force=True).get("office_name")
-        results = office_obj.get_an_office_by_id(office_id)
+    def change_details(self, party_id, data):
+        party_name = request.get_json(force=True).get("party_name")
+        results = party_obj.get_party_by_id(party_id)
         response = None
         if not results:
             response = (
                 jsonify(
                     {
                         "status": 404,
-                        "error": "Office with specified id does not exist",
+                        "error": "Party with specified id does not exist",
                     }
                 ),
                 404,
             )
-        elif not validate_name(office_name):
+        elif not validate_name(party_name):
             response = jsonify({"status": 400, "error": wrong_name}), 400
 
         else:
-
-            update = office_obj.update_office(office_id, office_name)
+            update = party_obj.update_party_name(party_id, party_name)
             response = (
                 jsonify(
                     {
                         "status": 200,
                         "data": [
                             {
-                                "id": update["office_id"],
-                                "success": "Office name updated successfully",
+                                "id": update["party_id"],
+                                "success": "Party name updated successfully",
                             }
                         ],
                     }
                 ),
                 200,
             )
-
         return response

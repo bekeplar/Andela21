@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from api.controllers.office import OfficeController
-from api.utilitiez.auth_token import (
+from api.utilitiez.user_auth import (
     token_required,
     non_admin,
     admin_required,

@@ -13,7 +13,7 @@ def create_app(config_name):
     @app.route("/")
     def _home():
         return (
-            jsonify({"message": "Welcome to iReporter Api V1", "status": 200}),
+            jsonify({"message": "Welcome to My Api V1", "status": 200}),
             200,
         )
 
@@ -46,4 +46,5 @@ def create_app(config_name):
 
     app.register_blueprint(users_bp)
     app.register_blueprint(office_bp)
+    
     return app
